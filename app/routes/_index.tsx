@@ -56,18 +56,30 @@ export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <h1>Tardy Critic</h1>
-      {data.ok && (
-        <ul>
+      {/* full-width poster grid that displays the name and year on hover */}
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
             {data.films.map((film) => (
-                <li key={film.link}>
-                  <a href={film.link} target="_blank" rel="noreferrer">
-                    {film.title} ({film.year})
+                <div
+                    key={film.link}
+                    style={{
+                        width: "100%",
+                        maxWidth: "300px",
+                        margin: "0 1rem 1rem 0",
+                    }}
+                >
+                    <a href={film.link}>
+                        <img
+                            src={film.image_url}
+                            alt={film.title}
+                            style={{ width: "100%" }}
+                        />
                     </a>
-                </li>
+                    <div style={{ textAlign: "center" }}>
+                      {film.title} ({film.year})
+                    </div>
+                </div>
             ))}
-        </ul>
-        )
-      }
+        </div>
     </div>
   );
 }
