@@ -1,8 +1,12 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import type { V2_MetaFunction, LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { motion } from "framer-motion"
+
 
 import xml2js from "xml2js";
+
+import indexStyles from "../styles/index.css";
 
 const LETTERBOXD_RSS = `https://letterboxd.com/tardycritic/rss/`;
 
@@ -18,8 +22,14 @@ interface Film {
 }
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+  return [{ title: "Tardy Critic" }];
 };
+
+export const links: LinksFunction = () => {
+  return [
+    { rel: 'stylesheet', href: indexStyles },
+  ]
+}
 
 export const loader = async () => {
   const films: Film[] = [];
@@ -54,32 +64,37 @@ export const loader = async () => {
 export default function Index() {
   const data = useLoaderData<typeof loader>();
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Tardy Critic</h1>
+    <div style={{ fontFamily: "Montserrat, system-ui, sans-serif", lineHeight: "1.4", fontVariationSettings: "'wght' 400", maxWidth: "1200px", margin: "0 auto", padding: "0 1rem" }}>
+      <h1 style={{ fontVariationSettings: "'wght' 500", textTransform: "uppercase" }}>Tardy Critic</h1>
       {/* full-width poster grid that displays the name and year on hover */}
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <motion.div layout style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gridGap: "1rem", margin: "1rem 0" }}>
             {data.films.map((film) => (
-                <div
+                <motion.div
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 1.02 }}
+                    initial={{ opacity: 0, scale: 0.2 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    // animate={{rotate: [0, 0, -2, -2, 0]}}
                     key={film.link}
                     style={{
-                        width: "100%",
-                        maxWidth: "300px",
-                        margin: "0 1rem 1rem 0",
+                      width: "100%",
+                      // maxWidth: "300px",
+                      //   margin: "0 1rem 1rem 0",
                     }}
                 >
-                    <a href={film.link}>
+                    <a href={film.link} style={{lineHeight: 0}}>
                         <img
                             src={film.image_url}
                             alt={film.title}
-                            style={{ width: "100%" }}
+                            style={{ width: "100%", borderRadius: "0.4rem", display: "block", border: "1px solid rgba(256,256,256,0.2)",  boxShadow: "0 2px 8px 0 rgba(0,0,0,0.4)" }}
                         />
                     </a>
-                    <div style={{ textAlign: "center" }}>
-                      {film.title} ({film.year})
-                    </div>
-                </div>
+                    {/*<p style={{ fontSize: "0.8rem",  }}>*/}
+                    {/*  {film.title} ({film.year})*/}
+                    {/*</p>*/}
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
     </div>
   );
 }
