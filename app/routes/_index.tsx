@@ -18,6 +18,7 @@ interface Film {
   review: string;
   rewatched: boolean;
   title: string;
+  watched_date: string;
   year: string;
 }
 
@@ -51,6 +52,7 @@ export const loader = async () => {
               review: review.join(`</p>`),
               rewatched: filmList[i]["letterboxd:rewatch"]?.[0] === "Yes",
               title: filmList[i]["letterboxd:filmTitle"]?.[0],
+                watched_date: filmList[i]["letterboxd:watchedDate"]?.[0],
               year: filmList[i]["letterboxd:filmYear"]?.[0],
             });
           }
@@ -63,12 +65,36 @@ export const loader = async () => {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>();
+  const [firstFilm, ...films] = data.films;
+  // sort films by date
+    films.sort((a, b) => {
+        return new Date(b.watched_date).getTime() - new Date(a.watched_date).getTime();
+    });
   return (
     <div style={{ fontFamily: "Montserrat, system-ui, sans-serif", lineHeight: "1.4", fontVariationSettings: "'wght' 400", maxWidth: "1200px", margin: "0 auto", padding: "0 1rem" }}>
       <h1 style={{ fontVariationSettings: "'wght' 500", textTransform: "uppercase" }}>Tardy Critic</h1>
-      {/* full-width poster grid that displays the name and year on hover */}
+      {/*<motion.div*/}
+      {/*    whileHover={{ scale: 1.04 }}*/}
+      {/*    whileTap={{ scale: 1.02 }}*/}
+      {/*    initial={{ opacity: 0, scale: 0.2 }}*/}
+      {/*    whileInView={{ opacity: 1, scale: 1 }}*/}
+      {/*    // animate={{rotate: [0, 0, -2, -2, 0]}}*/}
+      {/*    key={firstFilm.link}*/}
+      {/*    style={{*/}
+      {/*      width: "300px",*/}
+      {/*    }}*/}
+      {/*>*/}
+      {/*  <a href={firstFilm.link} style={{lineHeight: 0}}>*/}
+      {/*    <img*/}
+      {/*        src={firstFilm.image_url}*/}
+      {/*        alt={firstFilm.title}*/}
+      {/*        style={{ width: "100%", borderRadius: "0.4rem", display: "block", border: "1px solid rgba(256,256,256,0.2)",  boxShadow: "0 2px 8px 0 rgba(0,0,0,0.4)" }}*/}
+      {/*    />*/}
+      {/*  </a>*/}
+      {/*</motion.div>*/}
+      {/*<div dangerouslySetInnerHTML={{__html: firstFilm.review}} />*/}
         <motion.div layout style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gridGap: "1rem", margin: "1rem 0" }}>
-            {data.films.map((film) => (
+            {[firstFilm, ...films].map((film) => (
                 <motion.div
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 1.02 }}
@@ -78,8 +104,6 @@ export default function Index() {
                     key={film.link}
                     style={{
                       width: "100%",
-                      // maxWidth: "300px",
-                      //   margin: "0 1rem 1rem 0",
                     }}
                 >
                     <a href={film.link} style={{lineHeight: 0}}>
@@ -95,6 +119,9 @@ export default function Index() {
                 </motion.div>
             ))}
         </motion.div>
+      <p>
+        {data.films.length} films reviewed
+      </p>
     </div>
   );
 }
