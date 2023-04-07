@@ -69,7 +69,7 @@ export default function Index() {
     films.sort((a, b) => {
         return new Date(b.watched_date).getTime() - new Date(a.watched_date).getTime();
     });
-    console.log(firstFilm.watched_date)
+
     const firstFilmDate = new Date(firstFilm.watched_date).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
