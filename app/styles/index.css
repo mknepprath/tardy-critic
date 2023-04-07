@@ -1,5 +1,5 @@
 body {
-  color: #fff;
+  color: #eee;
   background: linear-gradient(to bottom, #222, #222 30%, #000);
   min-height: 100vh;
 }
@@ -15,6 +15,10 @@ body {
 a {
     color: #fff;
     text-decoration: none;
+}
+
+small {
+    color: #aaa;
 }
 
 .tagline {
@@ -39,15 +43,16 @@ a {
     .firstReview {
         display: flex;
         flex-direction: row;
+        align-items: flex-start;
     }
     .firstReview img {
-        margin-bottom: 0;
+        margin: 0;
     }
 }
 
 .fade {
     position: relative;
-    height: 22em;
+    height: 28em;
     overflow: hidden;
 }
 .fade::after {

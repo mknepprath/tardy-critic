@@ -69,6 +69,14 @@ export default function Index() {
     films.sort((a, b) => {
         return new Date(b.watched_date).getTime() - new Date(a.watched_date).getTime();
     });
+    console.log(firstFilm.watched_date)
+    const firstFilmDate = new Date(firstFilm.watched_date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        timeZone: 'UTC'
+    });
+
     return (
         <div style={{
             fontFamily: "Montserrat, system-ui, sans-serif",
@@ -114,6 +122,8 @@ export default function Index() {
 
                 <div>
                 <h2 style={{margin: 0}}>{firstFilm.title} ({firstFilm.year})</h2>
+
+                    <small>Reviewed on {firstFilmDate}, one decade after release</small>
 
             <div dangerouslySetInnerHTML={{__html: firstFilm.review}} className="fade" />
 
