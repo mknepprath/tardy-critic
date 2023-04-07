@@ -38,7 +38,7 @@ export default function About() {
 
       <h3>How it began...</h3>
 
-      <img alt="Twitter conversation where the idea began" src="/Tardy-Critic-Humble-Beginnings.png" />
+      <img alt="Twitter conversation where the idea began" src="/Tardy-Critic-Humble-Beginnings.png" style={{maxWidth: "100%"}} />
     </div>
   );
 }

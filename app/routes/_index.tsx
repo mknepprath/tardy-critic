@@ -81,7 +81,7 @@ export default function Index() {
             <div style={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
             <div style={{display: "flex", alignItems: "center", gap: "1rem"}}>
             <h1 style={{fontVariationSettings: "'wght' 500", textTransform: "uppercase"}}>Tardy Critic</h1>
-                <p>Movie Reviews One Decade Later
+                <p className="tagline">Movie Reviews One Decade Later
                 </p>
             </div>
                 <a href="/about" style={{fontVariationSettings: "'wght' 500"}}>ABOUT</a>
@@ -89,7 +89,7 @@ export default function Index() {
 
             <hr style={{opacity: 0.2, marginBottom: "2rem"}}/>
 
-            <div style={{display: "flex", gap: "2rem", justifyContent: "space-between", marginBottom: "4rem"}}>
+            <div className="firstReview" style={{gap: "2rem", justifyContent: "space-between", marginBottom: "4rem"}}>
 
             <motion.div
                 whileHover={{ scale: 1.04 }}

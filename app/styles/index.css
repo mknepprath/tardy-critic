@@ -17,6 +17,34 @@ a {
     text-decoration: none;
 }
 
+.tagline {
+    display: none;
+}
+@media (min-width: 768px) {
+    .tagline {
+        display: block;
+    }
+}
+
+.firstReview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.firstReview img {
+    width: 100%;
+    margin: 2rem 0;
+}
+@media (min-width: 768px) {
+    .firstReview {
+        display: flex;
+        flex-direction: row;
+    }
+    .firstReview img {
+        margin-bottom: 0;
+    }
+}
+
 .fade {
     position: relative;
     height: 22em;
