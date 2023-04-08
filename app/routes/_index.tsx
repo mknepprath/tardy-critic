@@ -141,10 +141,9 @@ export default function Index() {
 
   // split out the anniversaries that are today
   const today = new Date().toISOString().split("T")[0];
-  // const todayAnniversaries = data.anniversaries.filter(
-  //   (anniversary) => anniversary.tenth_anniversary_date === today
-  // );
-  const todayAnniversaries = [data.anniversaries[0]];
+  const todayAnniversaries = data.anniversaries.filter(
+    (anniversary) => anniversary.tenth_anniversary_date === today
+  );
 
   return (
     <div
