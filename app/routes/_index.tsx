@@ -72,6 +72,15 @@ export const loader = async () => {
   )
     .toISOString()
     .split("T")[0];
+  // Get movies from one month before and after date. This is because the API
+  //  returns movies based on the primary release date, so even though Oblivion
+  //  comes out on the 19th (US) and today is the 10th, it will not be returned,
+  //  because it's primary release date has passed.
+  const oneMonthBefore = new Date(
+    new Date(tenYearsAgo).setMonth(new Date(tenYearsAgo).getMonth() - 2)
+  )
+    .toISOString()
+    .split("T")[0];
   // get one month later than ten_years_ago in YYYY-MM-DD format
   const oneMonthLater = new Date(
     new Date(tenYearsAgo).setMonth(new Date(tenYearsAgo).getMonth() + 2)
@@ -80,7 +89,7 @@ export const loader = async () => {
     .split("T")[0];
 
   await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&language=en-US&region=US&sort_by=popularity.desc&page=1&primary_release_date.gte=${tenYearsAgo}&primary_release_date.lte=${oneMonthLater}`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&region=US&sort_by=popularity.desc&page=1&primary_release_date.gte=${oneMonthBefore}&primary_release_date.lte=${oneMonthLater}`
   )
     .then((response) => response.json())
     .then((body) => {
@@ -118,11 +127,16 @@ export const loader = async () => {
       new Date(a.release_date).getTime() - new Date(b.release_date).getTime()
     );
   });
+  // only return ones that are 10 years old or less
+  const upcomingAnniversaries = anniversaries.filter(
+    (anniversary) =>
+      new Date(anniversary.tenth_anniversary_date).getTime() >=
+      new Date().getTime()
+  );
+  // return 5 anniversaries
+  upcomingAnniversaries.splice(5);
 
-  // return 10 anniversaries
-  anniversaries.splice(5);
-
-  return json({ ok: true, films, anniversaries });
+  return json({ ok: true, films, anniversaries: upcomingAnniversaries });
 };
 
 export default function Index() {
