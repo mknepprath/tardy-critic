@@ -127,16 +127,33 @@ export const loader = async () => {
       new Date(a.release_date).getTime() - new Date(b.release_date).getTime()
     );
   });
+
+  // get today's anniversaries
+  const todayAnniversaries = anniversaries.filter(
+    (anniversary) =>
+      new Date(anniversary.tenth_anniversary_date)
+        .toISOString()
+        .split("T")[0] === new Date().toISOString().split("T")[0]
+  );
+
   // only return ones that are 10 years old or less
   const upcomingAnniversaries = anniversaries.filter(
     (anniversary) =>
       new Date(anniversary.tenth_anniversary_date).getTime() >=
       new Date().getTime()
   );
+
   // return 5 anniversaries
   upcomingAnniversaries.splice(5);
 
-  return json({ ok: true, films, anniversaries: upcomingAnniversaries });
+  return json({
+    ok: true,
+    films,
+    anniversaries: {
+      today: todayAnniversaries,
+      upcoming: upcomingAnniversaries,
+    },
+  });
 };
 
 export default function Index() {
@@ -151,12 +168,6 @@ export default function Index() {
       day: "numeric",
       timeZone: "UTC",
     }
-  );
-
-  // split out the anniversaries that are today
-  const today = new Date().toISOString().split("T")[0];
-  const todayAnniversaries = data.anniversaries.filter(
-    (anniversary) => anniversary.tenth_anniversary_date === today
   );
 
   return (
@@ -175,7 +186,7 @@ export default function Index() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: todayAnniversaries.length > 0 ? "0" : "2rem",
+          marginBottom: data.anniversaries.today.length > 0 ? "0" : "2rem",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -194,7 +205,7 @@ export default function Index() {
         </a>
       </div>
 
-      {todayAnniversaries.length > 0 && (
+      {data.anniversaries.today.length > 0 && (
         <>
           <hr style={{ opacity: 0.2, marginBottom: "2rem" }} />
 
@@ -235,7 +246,7 @@ export default function Index() {
                 gap: "1rem",
               }}
             >
-              {todayAnniversaries.map((film) => (
+              {data.anniversaries.today.map((film) => (
                 <motion.div
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 1.02 }}
@@ -290,7 +301,7 @@ export default function Index() {
           margin: "1rem 0 3rem 0",
         }}
       >
-        {data.anniversaries.map((film) => (
+        {data.anniversaries.upcoming.map((film) => (
           <motion.div
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 1.02 }}
