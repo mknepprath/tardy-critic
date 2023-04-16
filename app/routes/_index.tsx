@@ -77,13 +77,13 @@ export const loader = async () => {
   //  comes out on the 19th (US) and today is the 10th, it will not be returned,
   //  because it's primary release date has passed.
   const oneMonthBefore = new Date(
-    new Date(tenYearsAgo).setMonth(new Date(tenYearsAgo).getMonth() - 2)
+    new Date(tenYearsAgo).setMonth(new Date(tenYearsAgo).getMonth() - 1)
   )
     .toISOString()
     .split("T")[0];
   // get one month later than ten_years_ago in YYYY-MM-DD format
   const oneMonthLater = new Date(
-    new Date(tenYearsAgo).setMonth(new Date(tenYearsAgo).getMonth() + 2)
+    new Date(tenYearsAgo).setMonth(new Date(tenYearsAgo).getMonth() + 1)
   )
     .toISOString()
     .split("T")[0];
