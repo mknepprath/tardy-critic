@@ -137,8 +137,8 @@ export const loader = async () => {
     (anniversary) => anniversary.tenth_anniversary_date > todayStr
   );
 
-  // return up to 8 upcoming anniversaries
-  upcomingAnniversaries.splice(8);
+  // return up to 12 upcoming anniversaries (fills 2 rows of 6 or 4 rows of 3)
+  upcomingAnniversaries.splice(12);
 
   return json({
     ok: true,
