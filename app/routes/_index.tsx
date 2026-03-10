@@ -1,11 +1,11 @@
-import type { V2_MetaFunction, LinksFunction } from "@remix-run/node";
+import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { motion } from "framer-motion";
 
 import xml2js from "xml2js";
 
-import indexStyles from "../styles/index.css";
+import indexStyles from "../styles/index.css?url";
 import React from "react";
 
 const LETTERBOXD_RSS = `https://letterboxd.com/tardycritic/rss/`;
@@ -30,7 +30,7 @@ interface Anniversary {
   link: string;
 }
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [{ title: "Tardy Critic" }];
 };
 

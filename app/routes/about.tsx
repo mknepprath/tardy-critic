@@ -1,9 +1,9 @@
 import React from "react";
-import type { V2_MetaFunction, LinksFunction } from "@remix-run/node";
+import type { MetaFunction, LinksFunction } from "@remix-run/node";
 
-import indexStyles from "../styles/index.css";
+import indexStyles from "../styles/index.css?url";
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [{ title: "About Tardy Critic" }];
 };
 
