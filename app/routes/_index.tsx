@@ -87,6 +87,7 @@ export const loader = async () => {
         `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&region=US&sort_by=popularity.desc&page=${page}&primary_release_date.gte=${gte}&primary_release_date.lte=${lte}`
       );
       const body = await response.json();
+      if (!body.results) continue;
       for (let i = 0; i < body.results.length; i++) {
         const film = body.results[i];
         if (film.adult) continue;
