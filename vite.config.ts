@@ -7,4 +7,7 @@ export default defineConfig({
       ignoredRouteFiles: ["**/.*"],
     }),
   ],
+  ssr: {
+    noExternal: ["@remix-run/node", "@remix-run/server-runtime"],
+  },
 });
