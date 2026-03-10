@@ -137,8 +137,10 @@ export const loader = async () => {
     (anniversary) => anniversary.tenth_anniversary_date > todayStr
   );
 
-  // return up to 12 upcoming anniversaries (fills 2 rows of 6 or 4 rows of 3)
-  upcomingAnniversaries.splice(12);
+  // Trim to a multiple of 6 so the grid always has full rows (6 cols desktop, 3 cols mobile)
+  const maxUpcoming = Math.min(upcomingAnniversaries.length, 18);
+  const trimmed = maxUpcoming - (maxUpcoming % 6);
+  upcomingAnniversaries.splice(trimmed);
 
   return json({
     ok: true,
