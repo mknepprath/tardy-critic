@@ -13,44 +13,21 @@ export const links: LinksFunction = () => {
 
 export default function About() {
   return (
-    <div
-      style={{
-        fontFamily: "Montserrat, system-ui, sans-serif",
-        lineHeight: "1.4",
-        fontVariationSettings: "'wght' 400",
-        maxWidth: "900px",
-        margin: "0 auto",
-        padding: "0 1rem",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <a href="/" style={{ color: "#fff", textDecoration: "none" }}>
-            <h1
-              style={{
-                fontVariationSettings: "'wght' 500",
-                textTransform: "uppercase",
-              }}
-            >
-              Tardy Critic
-            </h1>
+    <div className="page">
+      <header className="header">
+        <div className="headerLeft">
+          <a href="/">
+            <h1 className="title">Tardy Critic</h1>
           </a>
           <p className="tagline">Movie Reviews One Decade Later</p>
         </div>
-        <a href="/" style={{ fontVariationSettings: "'wght' 500" }}>
-          {`← HOME`}
+        <a href="/" className="aboutLink">
+          &larr; HOME
         </a>
-      </div>
+      </header>
 
-      <hr style={{ opacity: 0.2, marginBottom: "2rem" }} />
-
-      <h2>About</h2>
+      <h3 className="sectionHeading">About</h3>
+      <div className="divider" />
 
       <p>
         We believe that reviewing movies ten years after their release provides
@@ -66,13 +43,21 @@ export default function About() {
         each film.
       </p>
 
-      <h3>How it began...</h3>
+      <h3 className="sectionHeading">How it began...</h3>
+      <div className="divider" />
 
       <img
         alt="Twitter conversation where the idea began"
         src="/Tardy-Critic-Humble-Beginnings.png"
-        style={{ maxWidth: "100%" }}
+        style={{ maxWidth: "100%", borderRadius: "0.25rem", opacity: 0.9 }}
       />
+
+      <footer className="footer">
+        <div className="divider" />
+        <p className="footerText">
+          Tardy Critic &middot; Movie Reviews One Decade Later
+        </p>
+      </footer>
     </div>
   );
 }

@@ -1,7 +1,22 @@
+/* === Base === */
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8d48b;
+  --gold-dim: #8a7435;
+  --cream: #f0e6d2;
+  --bg: #0d0d0d;
+  --bg-elevated: #161616;
+  --text: #e8e4de;
+  --text-muted: #8a8680;
+  --border: rgba(201, 168, 76, 0.15);
+}
+
 body {
-  color: #eee;
-  background: linear-gradient(to bottom, #222, #222 30%, #000);
+  color: var(--text);
+  background: var(--bg);
   min-height: 100vh;
+  margin: 0;
 }
 
 @font-face {
@@ -13,55 +28,326 @@ body {
 }
 
 a {
-    color: #fff;
-    text-decoration: none;
+  color: var(--cream);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--gold);
 }
 
 small {
-    color: #aaa;
+  color: var(--text-muted);
+}
+
+/* === Layout === */
+
+.page {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  line-height: 1.5;
+  font-variation-settings: 'wght' 400;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+/* === Header === */
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 2.5rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+}
+
+.title {
+  font-variation-settings: 'wght' 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--gold);
 }
 
 .tagline {
-    display: none;
-}
-@media (min-width: 768px) {
-    .tagline {
-        display: block;
-    }
+  display: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-variation-settings: 'wght' 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
 }
 
-.firstReview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.firstReview img {
-    width: 100%;
-    margin: 2rem 0;
-}
 @media (min-width: 768px) {
-    .firstReview {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-    }
-    .firstReview img {
-        margin: 0;
-    }
+  .tagline {
+    display: block;
+  }
 }
+
+.aboutLink {
+  font-variation-settings: 'wght' 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.aboutLink:hover {
+  color: var(--gold);
+}
+
+/* === Dividers & Section Headings === */
+
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--gold-dim),
+    transparent
+  );
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  font-variation-settings: 'wght' 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin: 3rem 0 0.75rem;
+}
+
+.sectionHeading sup {
+  text-transform: lowercase;
+}
+
+/* === Today's Anniversaries === */
+
+.todaySection {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2.5rem 1.5rem;
+  background: radial-gradient(ellipse at center, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.todayBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.todayAccent {
+  color: var(--gold);
+  font-size: 1.2rem;
+}
+
+.todayHeading {
+  font-variation-settings: 'wght' 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1.4rem;
+  color: var(--gold-light);
+  margin: 0;
+}
+
+.todayHeading sup {
+  text-transform: lowercase;
+}
+
+.todayGrid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.todayCard {
+  min-width: 160px;
+  max-width: 240px;
+}
+
+/* === Upcoming Anniversaries === */
+
+.upcomingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.upcomingCard {
+  width: 100%;
+}
+
+/* === Posters === */
+
+.poster {
+  width: 100%;
+  border-radius: 0.25rem;
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s;
+}
+
+.poster:hover {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(201, 168, 76, 0.1);
+}
+
+.posterGlow {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(201, 168, 76, 0.15);
+}
+
+.posterGlow:hover {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(201, 168, 76, 0.25);
+}
+
+.filmCaption {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+  letter-spacing: 0.02em;
+}
+
+/* === Latest Review === */
+
+.latestReview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.latestPoster {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.latestPoster img {
+  margin: 0;
+}
+
+.latestBody {
+  flex: 1;
+}
+
+.latestTitle {
+  margin: 0 0 0.25rem;
+  font-variation-settings: 'wght' 600;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.latestYear {
+  font-variation-settings: 'wght' 400;
+  color: var(--text-muted);
+}
+
+.latestMeta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.readMore {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  font-variation-settings: 'wght' 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 2px;
+}
+
+.readMore:hover {
+  color: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+@media (min-width: 768px) {
+  .latestReview {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* === Review Text Fade === */
 
 .fade {
-    position: relative;
-    height: 28em;
-    overflow: hidden;
+  position: relative;
+  height: 24em;
+  overflow: hidden;
+  color: var(--text);
+  line-height: 1.7;
 }
+
 .fade::after {
-    content: "";
-    text-align: right;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 6em;
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(34,34,34,1) 100%);
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 8em;
+  background: linear-gradient(to bottom, transparent, var(--bg) 100%);
+}
+
+/* === Archive Grid === */
+
+.archiveGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1.5rem;
+  margin: 0 0 1rem;
+}
+
+.archiveCard {
+  width: 100%;
+}
+
+.filmCount {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* === Footer === */
+
+.footer {
+  margin-top: 4rem;
+}
+
+.footerText {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
