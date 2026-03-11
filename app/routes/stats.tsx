@@ -4,8 +4,20 @@ import { useLoaderData } from "@remix-run/react";
 import { motion } from "framer-motion";
 
 import indexStyles from "../styles/index.css?url";
-import historicalRatings from "../data/historical-ratings.json";
+import ratings2016 from "../data/historical-ratings-2016.json";
+import ratings2017 from "../data/historical-ratings-2017.json";
+import ratings2018 from "../data/historical-ratings-2018.json";
+import ratings2019 from "../data/historical-ratings-2019.json";
+import ratings2020 from "../data/historical-ratings-2020.json";
 import React from "react";
+
+const historicalByYear: Record<number, Record<string, { title: string; tmdb_id: number; rating_then: number }>> = {
+  2016: ratings2016 as any,
+  2017: ratings2017 as any,
+  2018: ratings2018 as any,
+  2019: ratings2019 as any,
+  2020: ratings2020 as any,
+};
 
 interface AnniversaryFilm {
   title: string;
@@ -80,10 +92,7 @@ export const loader = async () => {
   // Then vs Now: use pre-scraped historical ratings + live OMDb for current
   const thenVsNow: ThenVsNow[] = [];
   const omdbKey = process.env.OMDB_API_KEY;
-  const historical = historicalRatings as Record<
-    string,
-    { title: string; tmdb_id: number; rating_then: number }
-  >;
+  const historical = historicalByYear[anniversaryYear] || {};
 
   if (omdbKey) {
     // Find films that have historical data

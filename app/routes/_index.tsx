@@ -309,12 +309,14 @@ export default function Index() {
           </div>
 
           <div className="todayGrid">
-            {data.anniversaries.today.map((film) => (
+            {data.anniversaries.today.map((film, i) => (
               <motion.div
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 1.02 }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
                 key={film.link}
                 className="todayCard"
               >
@@ -339,12 +341,14 @@ export default function Index() {
           <h3 className="sectionHeading">On This Day</h3>
           <div className="divider" />
           <div className="onThisDayGrid">
-            {data.onThisDay.map((film) => (
+            {data.onThisDay.map((film, i) => (
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 1.02 }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
                 key={film.link}
                 className="onThisDayCard"
               >
@@ -374,12 +378,14 @@ export default function Index() {
         <div className="divider" />
 
         <div className="upcomingGrid">
-          {data.anniversaries.upcoming.map((film) => (
+          {data.anniversaries.upcoming.map((film, i) => (
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 1.02 }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
               key={film.link}
               className="upcomingCard"
             >
@@ -406,6 +412,7 @@ export default function Index() {
             whileTap={{ scale: 1.01 }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="latestPoster"
           >
             <a href={firstFilm.link}>
@@ -465,7 +472,7 @@ export default function Index() {
 
         <motion.div layout className="archiveGrid">
           <AnimatePresence>
-            {filteredFilms.map((film) => (
+            {filteredFilms.map((film, i) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -473,6 +480,7 @@ export default function Index() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 1.02 }}
+                transition={{ delay: i * 0.03 }}
                 key={film.link}
                 className="archiveCard"
               >
