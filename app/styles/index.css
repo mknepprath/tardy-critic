@@ -712,3 +712,17 @@ small {
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.05);
 }
+
+.gapDelta {
+  font-variation-settings: 'wght' 600;
+  font-size: 0.85rem;
+  margin-left: 0.25rem;
+}
+
+.gapDeltaUp {
+  color: #6ecf6e;
+}
+
+.gapDeltaDown {
+  color: #cf6e6e;
+}

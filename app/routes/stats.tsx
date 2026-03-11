@@ -4,6 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 import { motion } from "framer-motion";
 
 import indexStyles from "../styles/index.css?url";
+import historicalRatings from "../data/historical-ratings.json";
 import React from "react";
 
 interface AnniversaryFilm {
@@ -15,10 +16,15 @@ interface AnniversaryFilm {
   tmdb_rating: number;
   tmdb_votes: number;
   popularity: number;
-  overview: string;
-  // OMDb scores (if available)
-  metascore: number | null;
-  imdb_rating: number | null;
+}
+
+interface ThenVsNow {
+  title: string;
+  image_url: string;
+  link: string;
+  rating_then: number;
+  rating_now: number;
+  delta: number;
 }
 
 export const meta: MetaFunction = () => {
@@ -38,7 +44,6 @@ export const loader = async () => {
 
   const allFilms: AnniversaryFilm[] = [];
 
-  // Fetch 5 pages for a broader picture of the year
   for (let page = 1; page <= 5; page++) {
     try {
       const response = await fetch(
@@ -65,9 +70,6 @@ export const loader = async () => {
           tmdb_rating: film.vote_average,
           tmdb_votes: film.vote_count,
           popularity: film.popularity,
-          overview: film.overview || "",
-          metascore: null,
-          imdb_rating: null,
         });
       }
     } catch (error) {
@@ -75,65 +77,69 @@ export const loader = async () => {
     }
   }
 
-  // If OMDb key is available, fetch critic vs audience scores for top films
+  // Then vs Now: use pre-scraped historical ratings + live OMDb for current
+  const thenVsNow: ThenVsNow[] = [];
   const omdbKey = process.env.OMDB_API_KEY;
+  const historical = historicalRatings as Record<
+    string,
+    { title: string; tmdb_id: number; rating_then: number }
+  >;
+
   if (omdbKey) {
-    // Only fetch for top 20 to stay within rate limits
-    const toFetch = allFilms.slice(0, 20);
+    // Find films that have historical data
+    const imdbIds = Object.keys(historical);
+
+    // Fetch current ratings from OMDb (fast, parallel)
     const omdbResults = await Promise.allSettled(
-      toFetch.map(async (film) => {
+      imdbIds.map(async (imdbId) => {
         const res = await fetch(
-          `https://www.omdbapi.com/?t=${encodeURIComponent(film.title)}&y=${film.release_date.split("-")[0]}&apikey=${omdbKey}`
+          `https://www.omdbapi.com/?i=${imdbId}&apikey=${omdbKey}`
         );
-        return res.json();
+        return { imdbId, data: await res.json() };
       })
     );
-    for (let i = 0; i < omdbResults.length; i++) {
-      const result = omdbResults[i];
-      if (result.status === "fulfilled" && result.value.Response === "True") {
-        const data = result.value;
-        toFetch[i].metascore =
-          data.Metascore && data.Metascore !== "N/A"
-            ? parseInt(data.Metascore)
-            : null;
-        toFetch[i].imdb_rating =
-          data.imdbRating && data.imdbRating !== "N/A"
-            ? parseFloat(data.imdbRating)
-            : null;
-      }
+
+    for (const result of omdbResults) {
+      if (result.status !== "fulfilled") continue;
+      const { imdbId, data } = result.value;
+      if (data.Response !== "True" || !data.imdbRating || data.imdbRating === "N/A")
+        continue;
+
+      const hist = historical[imdbId];
+      const currentRating = parseFloat(data.imdbRating);
+      const delta = currentRating - hist.rating_then;
+
+      // Find matching TMDb film for poster
+      const tmdbFilm = allFilms.find(
+        (f) => f.link === `https://www.letterboxd.com/tmdb/${hist.tmdb_id}`
+      );
+
+      thenVsNow.push({
+        title: hist.title,
+        image_url: tmdbFilm?.image_url || "",
+        link: tmdbFilm?.link || `https://www.imdb.com/title/${imdbId}/`,
+        rating_then: hist.rating_then,
+        rating_now: currentRating,
+        delta,
+      });
     }
+
+    // Sort by absolute delta (biggest changes first)
+    thenVsNow.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
   }
 
   const todayStr = now.toISOString().split("T")[0];
-
-  // Split into past and upcoming anniversaries
   const past = allFilms.filter((f) => f.tenth_anniversary_date <= todayStr);
   const upcoming = allFilms.filter((f) => f.tenth_anniversary_date > todayStr);
 
-  // Highest rated
   const highestRated = [...allFilms]
     .sort((a, b) => b.tmdb_rating - a.tmdb_rating)
     .slice(0, 10);
 
-  // Most popular (most voted)
   const mostVoted = [...allFilms]
     .sort((a, b) => b.tmdb_votes - a.tmdb_votes)
     .slice(0, 10);
 
-  // Films with biggest critic vs audience gap (if OMDb data available)
-  const withScores = allFilms.filter(
-    (f) => f.metascore !== null && f.imdb_rating !== null
-  );
-  const biggestGaps = [...withScores]
-    .map((f) => ({
-      ...f,
-      // Normalize metascore (0-100) to 0-10 scale for comparison with IMDb
-      gap: f.imdb_rating! - f.metascore! / 10,
-    }))
-    .sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap))
-    .slice(0, 10);
-
-  // Rating distribution
   const ratingBuckets: Record<string, number> = {};
   for (const film of allFilms) {
     const bucket = Math.floor(film.tmdb_rating);
@@ -141,26 +147,15 @@ export const loader = async () => {
     ratingBuckets[key] = (ratingBuckets[key] || 0) + 1;
   }
 
-  // Monthly distribution
-  const monthlyCount: Record<string, number> = {};
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
+  const monthlyCount: Record<string, number> = {};
   for (const film of allFilms) {
     const month = parseInt(film.release_date.split("-")[1]) - 1;
-    const key = monthNames[month];
-    monthlyCount[key] = (monthlyCount[key] || 0) + 1;
+    monthlyCount[monthNames[month]] =
+      (monthlyCount[monthNames[month]] || 0) + 1;
   }
 
   const avgRating =
@@ -174,8 +169,7 @@ export const loader = async () => {
     upcomingCount: upcoming.length,
     highestRated,
     mostVoted,
-    biggestGaps,
-    hasOmdb: !!omdbKey,
+    thenVsNow,
     ratingBuckets,
     monthlyCount,
   });
@@ -208,19 +202,22 @@ function RatingBar({
   );
 }
 
-function GapIndicator({ gap }: { gap: number }) {
-  const label =
-    gap > 1
-      ? "Aged well"
-      : gap > 0.3
-        ? "Slightly better now"
-        : gap > -0.3
-          ? "About the same"
-          : gap > -1
-            ? "Slightly faded"
-            : "Lost its shine";
-  const className =
-    gap > 0.3 ? "gapPositive" : gap < -0.3 ? "gapNegative" : "gapNeutral";
+function DeltaLabel({ delta }: { delta: number }) {
+  const abs = Math.abs(delta);
+  let label: string;
+  let className: string;
+
+  if (abs < 0.2) {
+    label = "Holding steady";
+    className = "gapNeutral";
+  } else if (delta > 0) {
+    label = abs >= 0.5 ? "Aged like fine wine" : "Warming up";
+    className = "gapPositive";
+  } else {
+    label = abs >= 0.5 ? "Lost its luster" : "Cooling off";
+    className = "gapNegative";
+  }
+
   return <span className={`gapLabel ${className}`}>{label}</span>;
 }
 
@@ -244,9 +241,7 @@ export default function Stats() {
         </a>
       </header>
 
-      <h2 className="statsHero">
-        The Class of {data.anniversaryYear}
-      </h2>
+      <h2 className="statsHero">The Class of {data.anniversaryYear}</h2>
       <p className="statsSubtitle">
         {data.totalFilms} notable films turning 10 this year &middot; Average
         audience score: {data.avgRating}/10
@@ -256,18 +251,17 @@ export default function Stats() {
         {data.upcomingCount} still to come
       </p>
 
-      {data.biggestGaps.length > 0 && (
+      {data.thenVsNow.length > 0 && (
         <section>
-          <h3 className="sectionHeading">
-            Then vs Now
-          </h3>
+          <h3 className="sectionHeading">Then vs Now</h3>
           <p className="statsDescription">
-            Metascore (critics at release) vs IMDb rating (audiences over time)
+            IMDb rating in {data.anniversaryYear} vs today — same audience,
+            same scale, a decade apart
           </p>
           <div className="divider" />
 
           <div className="gapGrid">
-            {data.biggestGaps.map((film) => (
+            {data.thenVsNow.map((film) => (
               <motion.div
                 key={film.link}
                 className="gapCard"
@@ -286,16 +280,22 @@ export default function Stats() {
                   <p className="gapTitle">{film.title}</p>
                   <div className="gapScores">
                     <span className="gapScore">
-                      Critics: {film.metascore}
-                      <small>/100</small>
+                      {data.anniversaryYear}: {film.rating_then.toFixed(1)}
+                      <small>/10</small>
                     </span>
                     <span className="gapArrow">&rarr;</span>
                     <span className="gapScore">
-                      Audiences: {film.imdb_rating}
+                      Now: {film.rating_now.toFixed(1)}
                       <small>/10</small>
                     </span>
+                    <span
+                      className={`gapDelta ${film.delta > 0 ? "gapDeltaUp" : film.delta < -0.05 ? "gapDeltaDown" : ""}`}
+                    >
+                      {film.delta > 0 ? "+" : ""}
+                      {film.delta.toFixed(1)}
+                    </span>
                   </div>
-                  <GapIndicator gap={film.gap} />
+                  <DeltaLabel delta={film.delta} />
                 </div>
               </motion.div>
             ))}
@@ -303,21 +303,8 @@ export default function Stats() {
         </section>
       )}
 
-      {!data.hasOmdb && (
-        <section>
-          <h3 className="sectionHeading">Then vs Now</h3>
-          <div className="divider" />
-          <p className="statsDescription">
-            Coming soon — critic scores at release vs audience ratings a decade
-            later.
-          </p>
-        </section>
-      )}
-
       <section>
-        <h3 className="sectionHeading">
-          Highest Rated
-        </h3>
+        <h3 className="sectionHeading">Highest Rated</h3>
         <p className="statsDescription">
           Top audience scores on TMDb, a decade later
         </p>
@@ -354,9 +341,7 @@ export default function Stats() {
       </section>
 
       <section>
-        <h3 className="sectionHeading">
-          Most Discussed
-        </h3>
+        <h3 className="sectionHeading">Most Discussed</h3>
         <p className="statsDescription">
           Films with the most audience votes — still on people's minds
         </p>
@@ -422,18 +407,8 @@ export default function Stats() {
 
         <div className="chartContainer">
           {[
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
           ].map((month) => (
             <RatingBar
               key={month}
