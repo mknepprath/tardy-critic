@@ -52,31 +52,6 @@ small {
   padding: 0 1.5rem 3rem;
 }
 
-/* === Progress Bar === */
-
-.progressBar {
-  height: 2px;
-  background: var(--bg-elevated);
-  margin-top: 0.75rem;
-  border-radius: 1px;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: linear-gradient(to right, var(--gold-dim), var(--gold));
-  border-radius: 1px;
-  transition: width 0.5s ease;
-}
-
-.progressLabel {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  margin: 0.35rem 0 0;
-  text-align: right;
-}
-
 /* === Header === */
 
 .header {

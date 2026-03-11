@@ -193,14 +193,6 @@ export const loader = async () => {
     (film) => film.watched_date && film.watched_date.slice(5) === todayMD
   );
 
-  // Anniversary progress: what % of the current year's window have we covered
-  const yearStart = new Date(now.getFullYear(), 0, 1);
-  const yearEnd = new Date(now.getFullYear(), 11, 31);
-  const progressPct =
-    ((now.getTime() - yearStart.getTime()) /
-      (yearEnd.getTime() - yearStart.getTime())) *
-    100;
-
   return json({
     ok: true,
     films,
@@ -209,7 +201,6 @@ export const loader = async () => {
       upcoming: upcomingAnniversaries,
     },
     onThisDay,
-    progressPct: Math.round(progressPct * 10) / 10,
   });
 };
 
@@ -246,17 +237,6 @@ export default function Index() {
 
   return (
     <div className="page">
-      <div className="progressBar">
-        <div
-          className="progressFill"
-          style={{ width: `${data.progressPct}%` }}
-        />
-      </div>
-      <p className="progressLabel">
-        {data.progressPct}% through the {new Date().getFullYear()} anniversary
-        window
-      </p>
-
       <header className="header">
         <div className="headerLeft">
           <h1 className="title">Tardy Critic</h1>
