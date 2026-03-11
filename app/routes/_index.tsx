@@ -246,6 +246,9 @@ export default function Index() {
           <button className="surpriseBtn" onClick={handleSurpriseMe}>
             Surprise Me
           </button>
+          <a href="/stats" className="aboutLink">
+            STATS
+          </a>
           <a href="/about" className="aboutLink">
             ABOUT
           </a>

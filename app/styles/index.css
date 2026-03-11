@@ -505,3 +505,210 @@ small {
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
+
+/* === Stats Page === */
+
+.statsHero {
+  font-variation-settings: 'wght' 600;
+  font-size: 2rem;
+  color: var(--gold-light);
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.04em;
+}
+
+.statsSubtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem;
+}
+
+.statsProgress {
+  color: var(--gold-dim);
+  font-size: 0.8rem;
+  margin: 0 0 2rem;
+  letter-spacing: 0.03em;
+}
+
+.statsDescription {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.75rem;
+}
+
+/* Stats List (ranked lists) */
+
+.statsListGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.statsListCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.statsRank {
+  font-variation-settings: 'wght' 600;
+  font-size: 1.1rem;
+  color: var(--gold-dim);
+  width: 1.5rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.statsListPoster {
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.statsListInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.statsListTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-variation-settings: 'wght' 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statsListScore {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+
+.statsListScore small {
+  color: var(--text-muted);
+}
+
+/* Bar Charts */
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.ratingBarRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ratingBarLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  width: 2.5rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ratingBarTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ratingBarFill {
+  height: 100%;
+  background: linear-gradient(to right, var(--gold-dim), var(--gold));
+  border-radius: 3px;
+}
+
+.ratingBarValue {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  width: 2rem;
+  flex-shrink: 0;
+}
+
+/* Then vs Now (gap cards) */
+
+.gapGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.gapCard {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.gapPoster {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.gapInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.gapTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-variation-settings: 'wght' 500;
+}
+
+.gapScores {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.gapScore {
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.gapScore small {
+  color: var(--text-muted);
+}
+
+.gapArrow {
+  color: var(--gold-dim);
+  font-size: 0.8rem;
+}
+
+.gapLabel {
+  font-size: 0.7rem;
+  font-variation-settings: 'wght' 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.2rem;
+}
+
+.gapPositive {
+  color: #6ecf6e;
+  background: rgba(110, 207, 110, 0.1);
+}
+
+.gapNegative {
+  color: #cf6e6e;
+  background: rgba(207, 110, 110, 0.1);
+}
+
+.gapNeutral {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+}
