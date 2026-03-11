@@ -6,7 +6,33 @@ import { motion } from "framer-motion";
 import xml2js from "xml2js";
 
 import indexStyles from "../styles/index.css?url";
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+function useCountdown(dateStr: string) {
+  const [days, setDays] = useState(() => {
+    const now = new Date();
+    const target = new Date(dateStr + "T00:00:00");
+    return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  });
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const now = new Date();
+      const target = new Date(dateStr + "T00:00:00");
+      setDays(Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    }, 60000);
+    return () => clearInterval(id);
+  }, [dateStr]);
+
+  if (days <= 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  return `in ${days} days`;
+}
+
+function CountdownCaption({ dateStr }: { dateStr: string }) {
+  const countdown = useCountdown(dateStr);
+  return <p className="filmCaption">{countdown}</p>;
+}
 
 const LETTERBOXD_RSS = `https://letterboxd.com/tardycritic/rss/`;
 
@@ -237,16 +263,7 @@ export default function Index() {
                   className="poster"
                 />
               </a>
-              <p className="filmCaption">
-                {new Date(film.tenth_anniversary_date).toLocaleDateString(
-                  "en-US",
-                  {
-                    month: "long",
-                    day: "numeric",
-                    timeZone: "UTC",
-                  }
-                )}
-              </p>
+              <CountdownCaption dateStr={film.tenth_anniversary_date} />
             </motion.div>
           ))}
         </div>
