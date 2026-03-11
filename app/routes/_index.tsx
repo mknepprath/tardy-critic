@@ -1,25 +1,31 @@
 import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import xml2js from "xml2js";
 
 import indexStyles from "../styles/index.css?url";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 function useCountdown(dateStr: string) {
   const [days, setDays] = useState(() => {
     const now = new Date();
     const target = new Date(dateStr + "T00:00:00");
-    return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.ceil(
+      (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
   });
 
   useEffect(() => {
     const id = setInterval(() => {
       const now = new Date();
       const target = new Date(dateStr + "T00:00:00");
-      setDays(Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+      setDays(
+        Math.ceil(
+          (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
+      );
     }, 60000);
     return () => clearInterval(id);
   }, [dateStr]);
@@ -32,6 +38,19 @@ function useCountdown(dateStr: string) {
 function CountdownCaption({ dateStr }: { dateStr: string }) {
   const countdown = useCountdown(dateStr);
   return <p className="filmCaption">{countdown}</p>;
+}
+
+function Stars({ rating }: { rating: string }) {
+  const num = parseFloat(rating);
+  if (isNaN(num)) return null;
+  const full = Math.floor(num);
+  const half = num % 1 >= 0.5;
+  return (
+    <span className="stars" aria-label={`${num} out of 5 stars`}>
+      {"★".repeat(full)}
+      {half && "½"}
+    </span>
+  );
 }
 
 const LETTERBOXD_RSS = `https://letterboxd.com/tardycritic/rss/`;
@@ -168,6 +187,20 @@ export const loader = async () => {
   const trimmed = maxUpcoming - (maxUpcoming % 6);
   upcomingAnniversaries.splice(trimmed);
 
+  // "On this day" — reviews whose watched_date shares today's month+day
+  const todayMD = todayStr.slice(5); // "MM-DD"
+  const onThisDay = films.filter(
+    (film) => film.watched_date && film.watched_date.slice(5) === todayMD
+  );
+
+  // Anniversary progress: what % of the current year's window have we covered
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const yearEnd = new Date(now.getFullYear(), 11, 31);
+  const progressPct =
+    ((now.getTime() - yearStart.getTime()) /
+      (yearEnd.getTime() - yearStart.getTime())) *
+    100;
+
   return json({
     ok: true,
     films,
@@ -175,12 +208,26 @@ export const loader = async () => {
       today: todayAnniversaries,
       upcoming: upcomingAnniversaries,
     },
+    onThisDay,
+    progressPct: Math.round(progressPct * 10) / 10,
   });
 };
 
 export default function Index() {
   const data = useLoaderData<typeof loader>();
-  const [firstFilm, ...films] = data.films;
+  const [firstFilm, ...restFilms] = data.films;
+  const [filter, setFilter] = useState("");
+  const [randomFilm, setRandomFilm] = useState<Film | null>(null);
+
+  const years = useMemo(() => {
+    const set = new Set(data.films.map((f) => f.year));
+    return Array.from(set).sort();
+  }, [data.films]);
+
+  const filteredFilms = useMemo(() => {
+    if (!filter) return restFilms;
+    return restFilms.filter((f) => f.year === filter);
+  }, [restFilms, filter]);
 
   const firstFilmDate = new Date(firstFilm.watched_date).toLocaleDateString(
     "en-US",
@@ -192,17 +239,81 @@ export default function Index() {
     }
   );
 
+  function handleSurpriseMe() {
+    const pick = data.films[Math.floor(Math.random() * data.films.length)];
+    setRandomFilm(pick);
+  }
+
   return (
     <div className="page">
+      <div className="progressBar">
+        <div
+          className="progressFill"
+          style={{ width: `${data.progressPct}%` }}
+        />
+      </div>
+      <p className="progressLabel">
+        {data.progressPct}% through the {new Date().getFullYear()} anniversary
+        window
+      </p>
+
       <header className="header">
         <div className="headerLeft">
           <h1 className="title">Tardy Critic</h1>
           <p className="tagline">Movie Reviews One Decade Later</p>
         </div>
-        <a href="/about" className="aboutLink">
-          ABOUT
-        </a>
+        <div className="headerRight">
+          <button className="surpriseBtn" onClick={handleSurpriseMe}>
+            Surprise Me
+          </button>
+          <a href="/about" className="aboutLink">
+            ABOUT
+          </a>
+        </div>
       </header>
+
+      <AnimatePresence>
+        {randomFilm && (
+          <motion.section
+            className="surpriseSection"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            key="surprise"
+          >
+            <div className="surpriseInner">
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                className="surprisePoster"
+              >
+                <a href={randomFilm.link}>
+                  <img
+                    src={randomFilm.image_url}
+                    alt={randomFilm.title}
+                    className="poster posterGlow"
+                  />
+                </a>
+              </motion.div>
+              <div className="surpriseBody">
+                <h3 className="surpriseTitle">
+                  {randomFilm.title}{" "}
+                  <span className="latestYear">({randomFilm.year})</span>
+                </h3>
+                {randomFilm.rating && <Stars rating={randomFilm.rating} />}
+                <a href={randomFilm.link} className="readMore">
+                  READ REVIEW &rarr;
+                </a>
+                <button
+                  className="surpriseDismiss"
+                  onClick={() => setRandomFilm(null)}
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
 
       {data.anniversaries.today.length > 0 && (
         <section className="todaySection">
@@ -233,6 +344,39 @@ export default function Index() {
                 </a>
                 <p className="filmCaption">
                   {film.title} ({film.release_date.split("-")[0]})
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {data.onThisDay.length > 0 && (
+        <section>
+          <h3 className="sectionHeading">On This Day</h3>
+          <div className="divider" />
+          <div className="onThisDayGrid">
+            {data.onThisDay.map((film) => (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 1.02 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                key={film.link}
+                className="onThisDayCard"
+              >
+                <a href={film.link}>
+                  <img
+                    src={film.image_url}
+                    alt={film.title}
+                    className="poster"
+                  />
+                </a>
+                <p className="filmCaption">
+                  {film.title}{" "}
+                  <span className="onThisDayYear">
+                    reviewed {film.watched_date.split("-")[0]}
+                  </span>
                 </p>
               </motion.div>
             ))}
@@ -296,6 +440,12 @@ export default function Index() {
               <span className="latestYear">({firstFilm.year})</span>
             </h2>
 
+            {firstFilm.rating && (
+              <div className="latestRating">
+                <Stars rating={firstFilm.rating} />
+              </div>
+            )}
+
             <p className="latestMeta">
               Reviewed on {firstFilmDate}, one decade after release
             </p>
@@ -313,28 +463,51 @@ export default function Index() {
       </section>
 
       <section>
-        <h3 className="sectionHeading">Previous Reviews</h3>
+        <div className="previousHeader">
+          <h3 className="sectionHeading">Previous Reviews</h3>
+          <select
+            className="filterSelect"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="">All Years</option>
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="divider" />
 
         <motion.div layout className="archiveGrid">
-          {films.map((film) => (
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 1.02 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              key={film.link}
-              className="archiveCard"
-            >
-              <a href={film.link}>
-                <img
-                  src={film.image_url}
-                  alt={film.title}
-                  className="poster"
-                />
-              </a>
-            </motion.div>
-          ))}
+          <AnimatePresence>
+            {filteredFilms.map((film) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 1.02 }}
+                key={film.link}
+                className="archiveCard"
+              >
+                <a href={film.link}>
+                  <img
+                    src={film.image_url}
+                    alt={film.title}
+                    className="poster"
+                  />
+                </a>
+                {film.rating && (
+                  <p className="archiveRating">
+                    <Stars rating={film.rating} />
+                  </p>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </motion.div>
         <p className="filmCount">{data.films.length} films reviewed</p>
       </section>

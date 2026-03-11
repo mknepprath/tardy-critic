@@ -52,6 +52,31 @@ small {
   padding: 0 1.5rem 3rem;
 }
 
+/* === Progress Bar === */
+
+.progressBar {
+  height: 2px;
+  background: var(--bg-elevated);
+  margin-top: 0.75rem;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(to right, var(--gold-dim), var(--gold));
+  border-radius: 1px;
+  transition: width 0.5s ease;
+}
+
+.progressLabel {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin: 0.35rem 0 0;
+  text-align: right;
+}
+
 /* === Header === */
 
 .header {
@@ -64,6 +89,12 @@ small {
 }
 
 .headerLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+}
+
+.headerRight {
   display: flex;
   align-items: baseline;
   gap: 1.25rem;
@@ -180,6 +211,148 @@ small {
 .todayCard {
   min-width: 160px;
   max-width: 240px;
+}
+
+/* === Surprise Me === */
+
+.surpriseBtn {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-variation-settings: 'wght' 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: none;
+  border: 1px solid var(--gold-dim);
+  border-radius: 0.25rem;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.surpriseBtn:hover {
+  color: var(--gold-light);
+  border-color: var(--gold);
+}
+
+.surpriseSection {
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.surpriseInner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.surprisePoster {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.surpriseBody {
+  flex: 1;
+  position: relative;
+}
+
+.surpriseTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-variation-settings: 'wght' 600;
+}
+
+.surpriseDismiss {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: inherit;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.surpriseDismiss:hover {
+  color: var(--text);
+}
+
+/* === On This Day === */
+
+.onThisDayGrid {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.onThisDayCard {
+  width: 130px;
+}
+
+.onThisDayYear {
+  display: block;
+  color: var(--gold-dim);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* === Stars === */
+
+.stars {
+  color: var(--gold);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.latestRating {
+  margin-bottom: 0.75rem;
+}
+
+.archiveRating {
+  margin: 0.35rem 0 0;
+  font-size: 0.7rem;
+}
+
+.archiveRating .stars {
+  font-size: 0.7rem;
+}
+
+/* === Filter === */
+
+.previousHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.filterSelect {
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  appearance: none;
+  letter-spacing: 0.04em;
+}
+
+.filterSelect:hover {
+  border-color: var(--gold-dim);
+}
+
+.filterSelect:focus {
+  outline: 1px solid var(--gold-dim);
+  outline-offset: 1px;
 }
 
 /* === Upcoming Anniversaries === */
