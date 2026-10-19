@@ -56,16 +56,21 @@ export const loader = async () => {
 
   const allFilms: AnniversaryFilm[] = [];
 
+  // Filter on US theatrical dates, since region=US makes release_date the US
+  // date; primary_release_date is worldwide, so a 2016 Japan / 2017 US film
+  // landed in 2016 with a 2027 anniversary.
   for (let page = 1; page <= 5; page++) {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&region=US&sort_by=popularity.desc&page=${page}&primary_release_date.gte=${gte}&primary_release_date.lte=${lte}`
+        `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&region=US&sort_by=popularity.desc&page=${page}&release_date.gte=${gte}&release_date.lte=${lte}&with_release_type=2|3`
       );
       const body = await response.json();
       if (!body.results) continue;
       for (const film of body.results) {
         if (film.adult) continue;
         if (film.vote_count < 300) continue;
+        // Re-releases match the date range but keep their first release_date.
+        if (!film.release_date?.startsWith(String(anniversaryYear))) continue;
 
         const releaseDate = new Date(film.release_date);
         const anniversaryDate = new Date(releaseDate);
